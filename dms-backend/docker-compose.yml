@@ -1,0 +1,33 @@
+version: '3.7'
+
+services:
+  backend:
+    build:
+      context: .
+    container_name: dms-backend
+    depends_on:
+      - db
+    environment:
+      - POSTGRES_USER=dms
+      - POSTGRES_PASSWORD=dms
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/dms
+      - SPRING_DATASOURCE_USERNAME=dms
+      - SPRING_DATASOURCE_PASSWORD=dms
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    ports:
+      - "8080:8080"
+
+  db:
+    container_name: dms-db
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: dms
+      POSTGRES_USER: dms
+      POSTGRES_PASSWORD: dms
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+volumes:
+  db-data:

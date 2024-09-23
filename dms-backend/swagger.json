@@ -1,0 +1,330 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "DMS API",
+    "description": "API for document upload, OCR processing, and document retrieval",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://virtserver.swaggerhub.com/EMILAUER7_1/DMS/1.0.0",
+      "description": "SwaggerHub API Auto Mocking"
+    },
+    {
+      "url": "http://localhost:8080",
+      "description": "Local development server"
+    }
+  ],
+  "paths": {
+    "/documents/upload": {
+      "post": {
+        "summary": "Upload a document",
+        "description": "Uploads a document for processing",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/documents_upload_body"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Document uploaded successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_200"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request"
+          }
+        }
+      }
+    },
+    "/documents/{id}": {
+      "get": {
+        "summary": "Get document by ID",
+        "description": "Retrieve the document using its ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The ID of the document",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Document retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_200_1"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Document not found"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update a document",
+        "description": "Updates the metadata or content of a document",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The ID of the document to update",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/documents_id_body"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Document updated successfully"
+          },
+          "404": {
+            "description": "Document not found"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete a document",
+        "description": "Deletes the document by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The ID of the document to delete",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Document deleted successfully"
+          },
+          "404": {
+            "description": "Document not found"
+          }
+        }
+      }
+    },
+    "/documents/search": {
+      "get": {
+        "summary": "Search documents",
+        "description": "Search for documents by metadata or content",
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "description": "Search query",
+            "required": true,
+            "style": "form",
+            "explode": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Search results",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/inline_response_200_2"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/documents/{id}/metadata": {
+      "get": {
+        "summary": "Get document metadata",
+        "description": "Retrieves metadata for a specific document by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The ID of the document",
+            "required": true,
+            "style": "simple",
+            "explode": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Metadata retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/inline_response_200_3"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Document not found"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Document": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer"
+          },
+          "url": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "summary": {
+            "type": "string"
+          }
+        }
+      },
+      "documents_upload_body": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "The document to upload",
+            "format": "binary"
+          }
+        }
+      },
+      "inline_response_200": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "url": {
+            "type": "string",
+            "example": "http://localhost:9000/documents/1"
+          }
+        }
+      },
+      "inline_response_200_1": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "url": {
+            "type": "string",
+            "example": "http://localhost:9000/documents/1/"
+          }
+        }
+      },
+      "documents_id_body": {
+        "type": "object",
+        "properties": {
+          "metadata": {
+            "type": "object",
+            "description": "Updated metadata for the document",
+            "example": {
+              "title": "Updated Title",
+              "description": "Updated document description"
+            }
+          },
+          "content": {
+            "type": "string",
+            "description": "Updated document content"
+          }
+        }
+      },
+      "inline_response_200_2": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 1
+          },
+          "title": {
+            "type": "string",
+            "example": "Document Title"
+          },
+          "summary": {
+            "type": "string",
+            "example": "Summary of document content"
+          }
+        }
+      },
+      "inline_response_200_3": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Document title"
+          },
+          "description": {
+            "type": "string",
+            "description": "Document description"
+          },
+          "created_at": {
+            "type": "string",
+            "description": "Document creation timestamp",
+            "format": "date-time"
+          },
+          "updated_at": {
+            "type": "string",
+            "description": "Document last updated timestamp",
+            "format": "date-time"
+          }
+        }
+      }
+    }
+  }
+}
