@@ -3,7 +3,7 @@ services:
     container_name: dms-frontend
     build:
       context: ./dms-frontend
-      dockerfile: ./Dockerfile
+      dockerfile: Dockerfile
 
   nginx:
     container_name: nginx
