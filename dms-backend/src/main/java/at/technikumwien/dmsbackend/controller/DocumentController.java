@@ -64,6 +64,26 @@ public class DocumentController {
         return ResponseEntity.ok(response);
     }
 
+    @GetMapping()
+    public ResponseEntity<List<DocumentResponseDTO>> getDocuments() {
+        DocumentResponseDTO doc1 = DocumentResponseDTO.builder()
+                .id(Long.valueOf(1))
+                .url("http://localhost:8080/documents/" + 1)
+                .title("Document 1")
+                .build();
+        DocumentResponseDTO doc2 = DocumentResponseDTO.builder()
+                .id(Long.valueOf(2))
+                .url("http://localhost:8080/documents/" + 2)
+                .title("Document 2")
+                .build();
+        DocumentResponseDTO doc3 = DocumentResponseDTO.builder()
+                .id(Long.valueOf(3))
+                .url("http://localhost:8080/documents/" + 3)
+                .title("Document 3")
+                .build();
+        return ResponseEntity.ok(Arrays.asList(doc1, doc2, doc3));
+    }
+
     /**
      * PUT /documents/{id} : Update a document
      * Updates the metadata or content of a document.

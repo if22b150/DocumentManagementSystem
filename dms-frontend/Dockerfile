@@ -1,11 +1,13 @@
 # Stage 1: Build frontend
-FROM node:21-alpine3.18 as build
+FROM node:22-alpine3.19 as build
 WORKDIR /app
 COPY package*.json /app/
 RUN npm install -g @angular/cli
+# Install git before npm install (for mdb)
+RUN apk add --no-cache git
 RUN npm install
-COPY dms-frontend .
-RUN npm run build --prod
+COPY . .
+RUN npm run build
 
 # Stage 2: Serve it using Ngnix
 FROM nginx:1.25.3-alpine-slim

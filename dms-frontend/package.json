@@ -1,0 +1,45 @@
+{
+  "name": "dms-frontend",
+  "version": "0.0.0",
+  "scripts": {
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build",
+    "watch": "ng build --watch --configuration development",
+    "test": "ng test"
+  },
+  "private": true,
+  "dependencies": {
+    "@angular/animations": "^18.1.0",
+    "@angular/cdk": "^18.0.0",
+    "@angular/common": "^18.1.0",
+    "@angular/compiler": "^18.1.0",
+    "@angular/core": "^18.1.0",
+    "@angular/forms": "^18.1.0",
+    "@angular/platform-browser": "^18.1.0",
+    "@angular/platform-browser-dynamic": "^18.1.0",
+    "@angular/router": "^18.1.0",
+    "@fortawesome/fontawesome-free": "^6.0.0",
+    "@ngx-translate/core": "^15.0.0",
+    "@ngx-translate/http-loader": "^8.0.0",
+    "mdb-angular-file-upload": "git+https://oauth2:cKXDGnNpyg_GX7gN876v@git.mdbootstrap.com/mdb/angular/mdb5/plugins/prd/file-upload",
+    "mdb-angular-ui-kit": "git+https://oauth2:cKXDGnNpyg_GX7gN876v@git.mdbootstrap.com/mdb/angular/mdb5/prd/mdb5-angular-ui-kit-pro-essential",
+    "rollup": "^4.22.4",
+    "rxjs": "~7.8.0",
+    "tslib": "^2.3.0",
+    "zone.js": "~0.14.3"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "^18.0.7",
+    "@angular/cli": "^18.1.2",
+    "@angular/compiler-cli": "^18.1.0",
+    "@types/jasmine": "~5.1.0",
+    "jasmine-core": "~5.1.0",
+    "karma": "~6.4.0",
+    "karma-chrome-launcher": "~3.2.0",
+    "karma-coverage": "~2.2.0",
+    "karma-jasmine": "~5.1.0",
+    "karma-jasmine-html-reporter": "~2.1.0",
+    "typescript": "~5.5.2"
+  }
+}

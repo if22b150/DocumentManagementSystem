@@ -1,0 +1,17 @@
+<div class="form-check" [formGroup]="formGroup">
+  <input
+    mdbCheckbox
+    class="form-check-input"
+    type="checkbox"
+    value=""
+    formControlName="{{controlName}}"
+    id="{{id}}"
+  />
+  <label class="form-check-label" for="{{id}}">
+    {{ label }} <span *ngIf="isRequiredTrue">*</span>
+  </label>
+  <mdb-error *ngIf="isRequiredTrue && control?.hasError('required') && (control?.dirty || control?.touched)"
+             style="top: 18px !important; left: 0 !important;">
+    {{label}} is required to be true
+  </mdb-error>
+</div>

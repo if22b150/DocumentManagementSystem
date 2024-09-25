@@ -1,0 +1,17 @@
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+    <li *ngFor="let bc of breadcrumbService.breadcrumbs(); let i = index"
+        class="breadcrumb-item {{i == breadcrumbService.breadcrumbs().length-1 ? 'active' : null}}">
+      <app-spinner *ngIf="bc.loading else notLoading" [grow]="true"></app-spinner>
+      <ng-template #notLoading>
+        <a [routerLink]="bc.path" *ngIf="i < breadcrumbService.breadcrumbs().length-1; else justText">
+          {{ bc.text|translate }}
+        </a>
+        <ng-template #justText>
+          {{ bc.text|translate }}
+        </ng-template>
+      </ng-template>
+
+    </li>
+  </ol>
+</nav>

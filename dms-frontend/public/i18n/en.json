@@ -1,0 +1,20 @@
+{
+  "DMS": "Document Management System",
+  "UPLOAD_DOCUMENT": "Upload document",
+  "UPLOAD": "Upload",
+  "CANCEL": "Cancel",
+  "UPLOAD_SUCCESS": "Document successfully uploaded.",
+  "CHOOSE_FILE": "Choose File",
+  "INCORRECT_FILE_FORMAT": "Incorrect file format. Valid format: ~~~",
+  "FILE_REPLACE": "Drag & Drop or Click to Replace",
+  "REMOVE": "Remove",
+  "ERROR_OCCURRED": "An error occurred.",
+  "SUCCESSFULLY_DELETED": "Document successfully deleted.",
+  "PAGE_NOT_FOUND": "Page not found.",
+  "TITLE": "Title",
+  "URL": "Url",
+  "NAVIGATION": {
+    "DOCUMENTS": "Documents",
+    "DOCUMENT_RESOURCE_NOT_FOUND": "Document not found."
+  }
+}
