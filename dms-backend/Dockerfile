@@ -2,11 +2,11 @@ FROM maven:3.9.9 AS build
 WORKDIR /app
 
 # Copy the pom.xml and install dependencies
-COPY pom.xml .
+COPY ./pom.xml .
 RUN mvn dependency:go-offline
 
 # Copy the source code and build the application
-COPY src ./src
+COPY ./src ./src
 RUN mvn package -DskipTests
 
 FROM openjdk:17-jdk-slim
