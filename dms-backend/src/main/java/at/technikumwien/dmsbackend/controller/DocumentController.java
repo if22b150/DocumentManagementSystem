@@ -60,6 +60,7 @@ public class DocumentController {
         DocumentResponseDTO response = DocumentResponseDTO.builder()
                 .id(Long.parseLong(id))
                 .url("http://localhost:8080/documents/" + id)
+                .title("Document " + id)
                 .build();
         return ResponseEntity.ok(response);
     }

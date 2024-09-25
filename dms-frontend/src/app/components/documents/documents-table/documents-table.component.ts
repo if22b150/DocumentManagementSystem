@@ -50,6 +50,12 @@ export class DocumentsTableComponent extends AResourceTableComponent<DocumentMod
     {
       buttons: [
         {
+          iconClass: 'fas fa-external-link-alt fa-lg',
+          floating: true,
+          outlined: true,
+          isObjectLink: true
+        },
+        {
           iconClass: 'fas fa-trash fa-lg',
           floating: true,
           outlined: true,

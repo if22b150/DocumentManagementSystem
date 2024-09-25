@@ -97,7 +97,7 @@ export class BreadcrumbsComponent implements OnInit {
           }
           let concreteModel = this.getConcreteModel(id, parent);
           if (concreteModel) {
-            text = concreteModel.name;
+            text = concreteModel.title;
           } else {
             text = parent.text;
             loading = true;
