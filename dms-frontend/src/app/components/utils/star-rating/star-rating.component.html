@@ -1,0 +1,5 @@
+<div class="d-flex gap-2 text-warning">
+  <i *ngFor="let i of [].constructor(fullStars)" class="fas fa-star"></i>
+  <i *ngIf="halfStar" class="fas fa-star-half-alt"></i>
+  <i *ngFor="let i of [].constructor(blankStars)" class="far fa-star"></i>
+</div>

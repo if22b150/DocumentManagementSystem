@@ -12,4 +12,5 @@ import lombok.NoArgsConstructor;
 public class DocumentResponseDTO {
     private Long id;
     private String url;
+    private String title;
 }

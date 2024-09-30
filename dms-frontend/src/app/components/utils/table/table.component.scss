@@ -1,0 +1,19 @@
+@use "../../../../variables.scss";
+
+.table-head-row th {
+  background-color: variables.$primary-color !important;
+  color: #fff;
+}
+
+.datatable table th, .datatable table td {
+  white-space: unset !important;
+}
+
+.form-check-input {
+  background-color: #fff;
+}
+
+th .form-check-input:checked {
+  border-color: #fff;
+}
+

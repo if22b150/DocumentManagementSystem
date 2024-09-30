@@ -60,8 +60,29 @@ public class DocumentController {
         DocumentResponseDTO response = DocumentResponseDTO.builder()
                 .id(Long.parseLong(id))
                 .url("http://localhost:8080/documents/" + id)
+                .title("Document " + id)
                 .build();
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping()
+    public ResponseEntity<List<DocumentResponseDTO>> getDocuments() {
+        DocumentResponseDTO doc1 = DocumentResponseDTO.builder()
+                .id(Long.valueOf(1))
+                .url("http://localhost:8080/documents/" + 1)
+                .title("Document 1")
+                .build();
+        DocumentResponseDTO doc2 = DocumentResponseDTO.builder()
+                .id(Long.valueOf(2))
+                .url("http://localhost:8080/documents/" + 2)
+                .title("Document 2")
+                .build();
+        DocumentResponseDTO doc3 = DocumentResponseDTO.builder()
+                .id(Long.valueOf(3))
+                .url("http://localhost:8080/documents/" + 3)
+                .title("Document 3")
+                .build();
+        return ResponseEntity.ok(Arrays.asList(doc1, doc2, doc3));
     }
 
     /**

@@ -1,0 +1,7 @@
+<app-modal title="UPLOAD_DOCUMENT" [loading]="loading" submitText="UPLOAD" closeText="CANCEL"
+           (submitClicked)="submit()">
+  <mdb-file-upload [defaultMsg]="('CHOOSE_FILE'|translate)" [acceptedExtensions]="'.pdf'"
+                   [formatError]="'INCORRECT_FILE_FORMAT'|translate" [mainError]="'ERROR_OCCURRED'|translate"
+                   [removeBtn]="'REMOVE'|translate" [previewMsg]="'FILE_REPLACE'|translate"
+                   (fileAdded)="file = $event" (uploadError)="file = null" (fileRemoved)="file = null" ></mdb-file-upload>
+</app-modal>
