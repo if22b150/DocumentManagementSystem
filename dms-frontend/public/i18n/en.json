@@ -13,6 +13,7 @@
   "PAGE_NOT_FOUND": "Page not found.",
   "TITLE": "Title",
   "URL": "Url",
+  "LOADING_RESULTS": "Loading results ...",
   "NAVIGATION": {
     "DOCUMENTS": "Documents",
     "DOCUMENTS_RESOURCE_NOT_FOUND": "Document not found."
