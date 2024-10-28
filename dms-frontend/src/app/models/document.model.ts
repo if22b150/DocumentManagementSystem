@@ -3,4 +3,8 @@ export interface DocumentModel {
   url: string
   title: string
   description: string
+  type: string
+  size: number
+  uploadDate: string
+  fileData: string
 }

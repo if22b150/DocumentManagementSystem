@@ -50,6 +50,13 @@ export class DocumentsTableComponent extends AResourceTableComponent<DocumentMod
     {
       buttons: [
         {
+          iconClass: 'fas fa-pencil-alt fa-lg', // Update icon
+          floating: true,
+          outlined: true,
+          color: 'primary',
+          onClick: ($event) => this.update($event) // Call the update method
+        },
+        {
           iconClass: 'fas fa-external-link-alt fa-lg',
           floating: true,
           outlined: true,
@@ -73,5 +80,13 @@ export class DocumentsTableComponent extends AResourceTableComponent<DocumentMod
     notificationService: CustomNotificationService
   ) {
     super(formBuilder, documentService, notificationService, '')
+  }
+
+  update(event: DocumentModel): void {
+    // Implement the update logic here.
+    // For example, navigate to an update form or modal.
+    console.log('Update document:', event);
+    // Implement your logic to handle the update here.
+    // You might want to open a modal or navigate to an update page.
   }
 }
