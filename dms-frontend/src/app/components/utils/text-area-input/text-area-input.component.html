@@ -1,0 +1,13 @@
+<mdb-form-control [formGroup]="formGroup">
+        <textarea mdbInput
+                  id="{{id}}"
+                  class="form-control"
+                  [rows]="rows"
+                  [placeholder]="placeholder ?? '' | translate"
+                  formControlName="{{controlName}}"></textarea>
+  <label mdbLabel
+         class="form-label"
+         for="{{id}}">{{ label }} <span *ngIf="isRequired">*</span></label>
+  <mdb-error *ngIf="isRequired && control?.hasError('required') && (control?.dirty || control?.touched)" style="top: initial !important;">{{ label }} is required.
+  </mdb-error>
+</mdb-form-control>

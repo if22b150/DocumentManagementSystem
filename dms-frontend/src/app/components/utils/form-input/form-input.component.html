@@ -9,8 +9,8 @@
          class="form-label"
          for="{{id()}}">{{label()}} <span *ngIf="isRequired()">*</span></label>
   <ng-content></ng-content>
-  <mdb-error *ngIf="isRequired() && control?.hasError('required') && (control?.dirty || control?.touched)">{{label()}} {{"VALIDATION.IS_REQUIRED"|translate}}.</mdb-error>
-  <mdb-error *ngIf="type() =='email' && control?.hasError('email') && (control?.dirty || control?.touched)">{{label()}} {{"VALIDATION.IS_INVALID"|translate}}.</mdb-error>
-  <mdb-error *ngIf="minLength() && control?.hasError('minlength') && (control?.dirty || control?.touched)">{{label()}} {{"VALIDATION.MIN_LENGTH"|translate:{minLength: minLength()} }}.</mdb-error>
-  <mdb-error *ngIf="min() && control?.hasError('min') && (control?.dirty || control?.touched)">{{label()}} {{"VALIDATION.MIN"|translate:{min: min()} }}.</mdb-error>
+  <mdb-error *ngIf="isRequired() && control?.hasError('required') && (control?.dirty || control?.touched)">{{label()}} is required.</mdb-error>
+  <mdb-error *ngIf="type() =='email' && control?.hasError('email') && (control?.dirty || control?.touched)">{{label()}} ist ungültig.</mdb-error>
+  <mdb-error *ngIf="minLength() && control?.hasError('minlength') && (control?.dirty || control?.touched)">{{label()}} muss mindestens {{minLength()}} Zeichen lang sein.</mdb-error>
+  <mdb-error *ngIf="min() && control?.hasError('min') && (control?.dirty || control?.touched)">{{label()}} muss mindestens {{min()}} sein.</mdb-error>
 </mdb-form-control>

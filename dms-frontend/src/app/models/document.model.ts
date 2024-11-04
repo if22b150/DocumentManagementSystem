@@ -1,6 +1,6 @@
 export interface DocumentModel {
   id: number
-  url: string
+  url?: string
   title: string
   description: string
   type: string

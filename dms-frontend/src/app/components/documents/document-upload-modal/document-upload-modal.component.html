@@ -1,7 +1,23 @@
 <app-modal title="UPLOAD_DOCUMENT" [loading]="loading" submitText="UPLOAD" closeText="CANCEL"
            (submitClicked)="submit()">
-  <mdb-file-upload [defaultMsg]="('CHOOSE_FILE'|translate)" [acceptedExtensions]="'.pdf'"
-                   [formatError]="'INCORRECT_FILE_FORMAT'|translate" [mainError]="'ERROR_OCCURRED'|translate"
-                   [removeBtn]="'REMOVE'|translate" [previewMsg]="'FILE_REPLACE'|translate"
-                   (fileAdded)="file = $event" (uploadError)="file = null" (fileRemoved)="file = null" ></mdb-file-upload>
+  <form [formGroup]="formGroup">
+    <div class="row gap-4">
+      <div class="col-12">
+        <app-form-input [formGroup]="formGroup" [isRequired]="true" label="Title" [controlName]="'title'"
+                        [id]="'title'"></app-form-input>
+      </div>
+      <div class="col-12">
+        <app-text-area-input [formGroup]="formGroup" [id]="'description'" [controlName]="'description'"
+                             label="Description" [isRequired]="true" [rows]="2"></app-text-area-input>
+      </div>
+
+      <div class="col-12">
+        <mdb-file-upload [defaultMsg]="('CHOOSE_FILE'|translate)" [acceptedExtensions]="'.pdf'"
+                         [formatError]="'INCORRECT_FILE_FORMAT'|translate" [mainError]="'ERROR_OCCURRED'|translate"
+                         [removeBtn]="'REMOVE'|translate" [previewMsg]="'FILE_REPLACE'|translate"
+                         (fileAdded)="onFileUploaded($event)" (uploadError)="file = null"
+                         (fileRemoved)="file = null"></mdb-file-upload>
+      </div>
+    </div>
+  </form>
 </app-modal>

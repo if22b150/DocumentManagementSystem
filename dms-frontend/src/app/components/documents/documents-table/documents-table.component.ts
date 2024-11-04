@@ -42,9 +42,9 @@ export class DocumentsTableComponent extends AResourceTableComponent<DocumentMod
       filterUrlParam: 'title',
     },
     {
-      name: 'URL',
+      name: 'DESCRIPTION',
       selector: [
-        {selector: 'url'}
+        {selector: 'description'}
       ]
     },
     {
