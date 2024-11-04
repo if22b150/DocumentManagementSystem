@@ -47,7 +47,7 @@ public class DocumentServiceImpl implements DocumentService {
         documentRepository.save(entity);
         try {
             rabbitTemplate.convertAndSend(RabbitMQConfig.QUEUE_NAME, "Document uploaded with ID: " + entity.getId());
-            logger.info("Message sent to RabbitMQ: Document uploaded with ID: " + entity.getId());
+            logger.info("Message sent to RabbitMQ: Document uploaded with ID: {}", entity.getId());
         } catch (Exception e) {
             throw new DocumentUploadException("Failed to upload document: " + e.getMessage());
         }
@@ -73,7 +73,8 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     public DocumentDTO updateDocument(Long id, DocumentDTO updateRequest) {
-        DocumentEntity existingDocument = documentMapper.mapToEntity(getDocumentById(id));
+        DocumentEntity existingDocument = documentRepository.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Document not found with ID: " + id));
 
         existingDocument.setTitle(updateRequest.getTitle());
         existingDocument.setDescription(updateRequest.getDescription());
