@@ -1,10 +1,9 @@
 package at.technikumwien.dmsbackend.service;
 
 
-import at.technikumwien.dmsbackend.service.dto.DocumentDTO;
-
-import javax.print.Doc;
 import java.util.List;
+
+import at.technikumwien.dmsbackend.service.dto.DocumentDTO;
 
 
 public interface DocumentService {

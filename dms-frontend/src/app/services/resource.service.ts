@@ -33,6 +33,14 @@ export abstract class ResourceService<M extends AModel> {
   private getAllSubscription: Subscription | null = null;
   private cancelRequest$ = new Subject<void>();
 
+  addModel(model: M) {
+    this.apiResponse.update((apiResp) => {
+      const updatedData = apiResp.data
+      updatedData.push(model)
+      return { ...apiResp, data: updatedData };
+    });
+  }
+
   removeModel(id: number) {
     // Update the concrete models
     this.usedConcreteModels.update((models) => {
@@ -137,6 +145,18 @@ export abstract class ResourceService<M extends AModel> {
             this.breadcrumbService.updateCurrentConcreteModel(
               m.title!,
             );
+          },
+        }),
+      );
+  }
+
+  create(data: any): Observable<M> {
+    return this.http
+      .post<M>(environment.apiUrl + this.resourceUrl, data)
+      .pipe(
+        tap({
+          next: (m: M) => {
+            this.addModel(m)
           },
         }),
       );
