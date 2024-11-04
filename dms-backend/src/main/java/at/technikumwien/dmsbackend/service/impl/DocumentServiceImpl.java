@@ -1,5 +1,18 @@
 package at.technikumwien.dmsbackend.service.impl;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.stereotype.Component;
+
+import at.technikumwien.dmsbackend.config.RabbitMQConfig;
+import at.technikumwien.dmsbackend.exception.DocumentUploadException;
 import at.technikumwien.dmsbackend.persistence.entity.DocumentEntity;
 import at.technikumwien.dmsbackend.persistence.repository.DocumentRepository;
 import at.technikumwien.dmsbackend.service.DocumentService;
@@ -8,23 +21,17 @@ import at.technikumwien.dmsbackend.service.mapper.DocumentMapper;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Component
 @Transactional
 @RequiredArgsConstructor
-public class DocumentImpl implements DocumentService {
-    @Autowired
-    private DocumentRepository documentRepository;
-    @Autowired
-    private DocumentMapper documentMapper;
+public class DocumentServiceImpl implements DocumentService {
+
+    private static final Logger logger = LoggerFactory.getLogger(DocumentServiceImpl.class);
+
+    private final DocumentRepository documentRepository;
+    private final DocumentMapper documentMapper;
+    private final RabbitTemplate rabbitTemplate;
 
     @Override
     public DocumentDTO uploadDocument(DocumentDTO documentDTO) {
@@ -38,6 +45,12 @@ public class DocumentImpl implements DocumentService {
                 .build();
 
         documentRepository.save(entity);
+        try {
+            rabbitTemplate.convertAndSend(RabbitMQConfig.QUEUE_NAME, "Document uploaded with ID: " + entity.getId());
+            logger.info("Message sent to RabbitMQ: Document uploaded with ID: " + entity.getId());
+        } catch (Exception e) {
+            throw new DocumentUploadException("Failed to upload document: " + e.getMessage());
+        }
         return documentMapper.mapToDto(entity);
     }
 
