@@ -68,12 +68,12 @@ export class DocumentUploadModalComponent {
     this.loading = true;
 
     const resource = {
-      title: this.formGroup.get('title')?.value,           // replace with actual title
-      description: this.formGroup.get('description')?.value, // replace with actual description
-      type: "pdf",                    // replace with actual type if dynamic
+      title: this.formGroup.get('title')?.value,
+      description: this.formGroup.get('description')?.value,
+      type: "pdf",
       size: this.file.size,
-      uploadDate: new Date().toISOString().split("T")[0],  // Format to "YYYY-MM-DD",
-      fileData: this.fileDataBase64 // Send the base64-encoded file data
+      uploadDate: new Date().toISOString().split("T")[0],
+      fileData: this.fileDataBase64
     };
 
     this.documentService.create(resource)
