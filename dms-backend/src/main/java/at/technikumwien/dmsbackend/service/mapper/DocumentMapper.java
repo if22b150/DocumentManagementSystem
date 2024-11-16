@@ -18,7 +18,6 @@ public class DocumentMapper extends AbstractMapper<DocumentEntity, DocumentDTO> 
                 .type(source.getType())
                 .size(source.getSize())
                 .uploadDate(source.getUploadDate().toString())
-                .fileData(source.getFileData())
                 .build();
     }
 
@@ -30,7 +29,7 @@ public class DocumentMapper extends AbstractMapper<DocumentEntity, DocumentDTO> 
                 .type(source.getType())
                 .size(source.getSize())
                 .uploadDate(LocalDate.parse(source.getUploadDate()))
-                .fileData(source.getFileData())
+                .fileKey("document-" + source.getId()) // Generate the MinIO file key
                 .build();
     }
 }

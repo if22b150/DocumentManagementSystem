@@ -1,14 +1,17 @@
 package at.technikumwien.dmsbackend.service.impl;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
+import at.technikumwien.dmsbackend.service.MinioService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import at.technikumwien.dmsbackend.config.RabbitMQConfig;
@@ -32,6 +35,10 @@ public class DocumentServiceImpl implements DocumentService {
     private final DocumentRepository documentRepository;
     private final DocumentMapper documentMapper;
     private final RabbitTemplate rabbitTemplate;
+    private final MinioService minioService;
+
+    @Value("${minio.bucket-name}")
+    private String bucketName;
 
     @Override
     public DocumentDTO uploadDocument(DocumentDTO documentDTO) {
@@ -41,11 +48,18 @@ public class DocumentServiceImpl implements DocumentService {
                 .type(documentDTO.getType())
                 .size(documentDTO.getSize())
                 .uploadDate(LocalDate.parse(documentDTO.getUploadDate()))
-                .fileData(documentDTO.getFileData())
+//                .fileData(documentDTO.getFileData())
                 .build();
 
+        String fileKey = "document-" + entity.getId();
+        entity.setFileKey(fileKey); // Set fileKey in the entity
+
         documentRepository.save(entity);
+
         try {
+            // Upload the file data to MinIO
+            minioService.uploadFile(fileKey, new ByteArrayInputStream(documentDTO.getFileData()), documentDTO.getFileData().length, documentDTO.getType());
+
             rabbitTemplate.convertAndSend(RabbitMQConfig.QUEUE_NAME, "Document uploaded with ID: " + entity.getId());
             logger.info("Message sent to RabbitMQ: Document uploaded with ID: {}", entity.getId());
         } catch (Exception e) {
@@ -56,12 +70,18 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     public DocumentDTO getDocumentById(Long id) {
-        Optional<DocumentEntity> documentEntityOptional = documentRepository.findById(id);
+        DocumentEntity documentEntity = documentRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Document not found with ID: " + id));
 
-        if (documentEntityOptional.isPresent())
-            return documentMapper.mapToDto(documentEntityOptional.get());
-        else
-            throw new EntityNotFoundException("Document not found with ID: " + id);
+        // Fetch file data from MinIO
+        String fileKey = documentEntity.getFileKey();
+        try (InputStream inputStream = minioService.getFile(fileKey)) {
+            DocumentDTO documentDTO = documentMapper.mapToDto(documentEntity);
+            documentDTO.setFileData(inputStream.readAllBytes());
+            return documentDTO;
+        } catch (Exception e) {
+            throw new DocumentUploadException("Failed to retrieve document: " + e.getMessage());
+        }
     }
 
     @Override
@@ -81,15 +101,34 @@ public class DocumentServiceImpl implements DocumentService {
         existingDocument.setType(updateRequest.getType());
         existingDocument.setSize(updateRequest.getSize());
         existingDocument.setUploadDate(LocalDate.parse(updateRequest.getUploadDate()));
-        existingDocument.setFileData(updateRequest.getFileData());
 
         documentRepository.save(existingDocument);
+
+        if (updateRequest.getFileData() != null) {
+            String fileKey = existingDocument.getFileKey();
+            try {
+                // Update the file in MinIO
+                minioService.uploadFile(fileKey, new ByteArrayInputStream(updateRequest.getFileData()), updateRequest.getSize(), updateRequest.getType());
+            } catch (Exception e) {
+                throw new DocumentUploadException("Failed to update document file: " + e.getMessage());
+            }
+        }
+
         return documentMapper.mapToDto(existingDocument);
     }
 
     @Override
     public void deleteDocument(Long id) {
+        DocumentEntity documentEntity = documentRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Document not found with ID: " + id));
+
         documentRepository.deleteById(id);
+
+        try {
+            minioService.getFile(documentEntity.getFileKey()); // Delete the file from MinIO
+        } catch (Exception e) {
+            logger.warn("Failed to delete file from MinIO: " + e.getMessage());
+        }
     }
 
     @Override

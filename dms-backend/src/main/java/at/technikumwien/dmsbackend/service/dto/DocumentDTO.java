@@ -24,5 +24,5 @@ public class DocumentDTO {
     private Long size;
     @NotBlank(message = "Upload date is required.")
     private String uploadDate;
-    private byte[] fileData;
+    private byte[] fileData; // Only set this when file data is fetched from MinIO
 }
