@@ -25,6 +25,7 @@ services:
     depends_on:
       - db
       - minio
+      - rabbitmq
     environment:
       - POSTGRES_USER=dms
       - POSTGRES_PASSWORD=dms

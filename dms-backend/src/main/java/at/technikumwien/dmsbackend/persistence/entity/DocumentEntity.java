@@ -34,6 +34,6 @@ public class DocumentEntity {
     @Column(name = "upload_date", nullable = false)
     private LocalDate uploadDate;
 
-    @Column(name = "file_key", nullable = false, unique = true)
+    @Column(name = "file_key", nullable = true, unique = true)
     private String fileKey; // Reference to the file in MinIO
 }

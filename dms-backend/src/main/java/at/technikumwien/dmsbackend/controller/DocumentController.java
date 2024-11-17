@@ -1,9 +1,11 @@
 package at.technikumwien.dmsbackend.controller;
 
+import java.io.InputStream;
 import java.util.List;
 
 import javax.validation.Valid;
 
+import at.technikumwien.dmsbackend.service.MinioService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -27,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 public class DocumentController {
     
     private final DocumentService documentService;
+    private final MinioService minioService;
 
     @PostMapping
     public ResponseEntity<DocumentDTO> create(@Valid @RequestBody DocumentDTO document) {
@@ -68,5 +71,29 @@ public class DocumentController {
     public ResponseEntity<DocumentDTO> getDocumentMetadata(@Valid @PathVariable Long id) {
         DocumentDTO documentMetadata = documentService.getDocumentMetadata(id);
         return ResponseEntity.ok(documentMetadata);
+    }
+
+    @GetMapping("/{id}/download")
+    public ResponseEntity<byte[]> downloadDocument(@PathVariable Long id) {
+        // Fetch document metadata from the database
+        DocumentDTO document = documentService.getDocumentById(id);
+
+        try {
+            // Fetch file data from MinIO using the fileKey
+            InputStream fileInputStream = minioService.getFile(document.getFileKey());
+            byte[] fileData = fileInputStream.readAllBytes();
+
+            String filename = (document.getTitle() != null && !document.getTitle().isEmpty())
+                    ? document.getTitle().replaceAll("[^a-zA-Z0-9.-]", "_")
+                    : document.getFileKey();
+
+            // Return the file as a downloadable response
+            return ResponseEntity.ok()
+                    .header("Content-Disposition", "attachment; filename=\"" + filename + ".pdf\"")
+                    .contentType(org.springframework.http.MediaType.parseMediaType("application/octet-stream"))
+                    .body(fileData);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to fetch file from MinIO: " + e.getMessage(), e);
+        }
     }
 }

@@ -2,6 +2,9 @@ package at.technikumwien.dmsbackend.service.impl;
 
 import at.technikumwien.dmsbackend.service.MinioService;
 import io.minio.*;
+import jakarta.annotation.PostConstruct;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -12,6 +15,9 @@ public class MinioServiceImpl implements MinioService {
     private final MinioClient minioClient;
     private final String bucketName;
 
+    private static final Logger logger = LoggerFactory.getLogger(MinioServiceImpl.class);
+
+
     public MinioServiceImpl(@Value("${minio.url}") String url,
                         @Value("${minio.access-key}") String accessKey,
                         @Value("${minio.secret-key}") String secretKey,
@@ -21,12 +27,14 @@ public class MinioServiceImpl implements MinioService {
                 .credentials(accessKey, secretKey)
                 .build();
         this.bucketName = bucketName;
+    }
 
-        // Ensure bucket exists
+    @PostConstruct
+    public void initialize() {
         try {
             createBucketIfNotExists();
         } catch (Exception e) {
-            throw new RuntimeException("Error creating bucket: " + e.getMessage());
+            throw new RuntimeException("Failed to initialize MinIO bucket", e);
         }
     }
 
@@ -47,7 +55,7 @@ public class MinioServiceImpl implements MinioService {
                         .bucket(bucketName)
                         .object(fileName)
                         .stream(inputStream, size, -1)
-                        .contentType(contentType)
+                        .contentType("application/pdf")
                         .build()
         );
     }
@@ -56,6 +64,16 @@ public class MinioServiceImpl implements MinioService {
     public InputStream getFile(String fileName) throws Exception {
         return minioClient.getObject(
                 GetObjectArgs.builder()
+                        .bucket(bucketName)
+                        .object(fileName)
+                        .build()
+        );
+    }
+
+    @Override
+    public void deleteFile(String fileName) throws Exception {
+        minioClient.removeObject(
+                RemoveObjectArgs.builder()
                         .bucket(bucketName)
                         .object(fileName)
                         .build()

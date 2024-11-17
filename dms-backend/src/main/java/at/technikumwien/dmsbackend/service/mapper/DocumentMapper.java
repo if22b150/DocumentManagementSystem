@@ -9,6 +9,8 @@ import java.time.LocalDate;
 @Component
 public class DocumentMapper extends AbstractMapper<DocumentEntity, DocumentDTO> {
 
+    public static final String BASE_URL = "http://localhost:8080/api/v1/documents";
+
     @Override
     public DocumentDTO mapToDto(DocumentEntity source) {
         return DocumentDTO.builder()
@@ -18,6 +20,7 @@ public class DocumentMapper extends AbstractMapper<DocumentEntity, DocumentDTO> 
                 .type(source.getType())
                 .size(source.getSize())
                 .uploadDate(source.getUploadDate().toString())
+                .fileKey(source.getFileKey())
                 .build();
     }
 

@@ -51,10 +51,13 @@ public class DocumentServiceImpl implements DocumentService {
 //                .fileData(documentDTO.getFileData())
                 .build();
 
-        String fileKey = "document-" + entity.getId();
-        entity.setFileKey(fileKey); // Set fileKey in the entity
+        // Save the entity to generate the ID
+        entity = documentRepository.save(entity);
 
-        documentRepository.save(entity);
+        // Step 2: Set the fileKey and save the entity again
+        String fileKey = "document-" + entity.getId();
+        entity.setFileKey(fileKey);
+        entity = documentRepository.save(entity);
 
         try {
             // Upload the file data to MinIO
@@ -73,15 +76,7 @@ public class DocumentServiceImpl implements DocumentService {
         DocumentEntity documentEntity = documentRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Document not found with ID: " + id));
 
-        // Fetch file data from MinIO
-        String fileKey = documentEntity.getFileKey();
-        try (InputStream inputStream = minioService.getFile(fileKey)) {
-            DocumentDTO documentDTO = documentMapper.mapToDto(documentEntity);
-            documentDTO.setFileData(inputStream.readAllBytes());
-            return documentDTO;
-        } catch (Exception e) {
-            throw new DocumentUploadException("Failed to retrieve document: " + e.getMessage());
-        }
+        return documentMapper.mapToDto(documentEntity);
     }
 
     @Override
@@ -125,9 +120,10 @@ public class DocumentServiceImpl implements DocumentService {
         documentRepository.deleteById(id);
 
         try {
-            minioService.getFile(documentEntity.getFileKey()); // Delete the file from MinIO
+            minioService.deleteFile(documentEntity.getFileKey()); // Call deleteFile from MinioService
+            logger.info("File deleted from MinIO with key: {}", documentEntity.getFileKey());
         } catch (Exception e) {
-            logger.warn("Failed to delete file from MinIO: " + e.getMessage());
+            logger.warn("Failed to delete file from MinIO: {}", e.getMessage(), e);
         }
     }
 
