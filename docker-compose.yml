@@ -58,6 +58,24 @@ services:
       - RABBITMQ_DEFAULT_USER=dms
       - RABBITMQ_DEFAULT_PASS=dms
 
+  ocr:
+    build:
+      context: ./dms-ocr
+      dockerfile: Dockerfile
+    environment:
+      - OCR_QUEUE=documentQueue
+      - RESULT_QUEUE=RESULT_QUEUE
+      - MINIO_URL=http://minio:9000
+      - MINIO_ACCESS_KEY=dms-minio
+      - MINIO_SECRET_KEY=dms-minio
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - SPRING_RABBITMQ_PORT=5672
+      - SPRING_RABBITMQ_USERNAME=dms
+      - SPRING_RABBITMQ_PASSWORD=dms
+    depends_on:
+      - rabbitmq
+      - minio
+
   minio:
     container_name: minio
     image: minio/minio:latest

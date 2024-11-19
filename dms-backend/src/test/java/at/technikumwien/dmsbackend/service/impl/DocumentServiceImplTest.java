@@ -74,7 +74,7 @@ class DocumentServiceImplTest {
         DocumentDTO result = documentService.uploadDocument(documentDTO);
         
         assertNotNull(result);
-        verify(rabbitTemplate, times(1)).convertAndSend(RabbitMQConfig.QUEUE_NAME, "Document uploaded with ID: " + documentEntity.getId());
+        verify(rabbitTemplate, times(1)).convertAndSend(RabbitMQConfig.OCR_QUEUE, "Document uploaded with ID: " + documentEntity.getId());
     }
     
     

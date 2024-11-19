@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import at.technikumwien.dmsbackend.service.MinioService;
+import at.technikumwien.dmsbackend.service.dto.OCRJobDTO;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -36,6 +38,7 @@ public class DocumentServiceImpl implements DocumentService {
     private final DocumentMapper documentMapper;
     private final RabbitTemplate rabbitTemplate;
     private final MinioService minioService;
+    private final ObjectMapper objectMapper;
 
     @Value("${minio.bucket-name}")
     private String bucketName;
@@ -63,7 +66,9 @@ public class DocumentServiceImpl implements DocumentService {
             // Upload the file data to MinIO
             minioService.uploadFile(fileKey, new ByteArrayInputStream(documentDTO.getFileData()), documentDTO.getFileData().length, documentDTO.getType());
 
-            rabbitTemplate.convertAndSend(RabbitMQConfig.QUEUE_NAME, "Document uploaded with ID: " + entity.getId());
+            OCRJobDTO job = new OCRJobDTO(entity.getId(), entity.getFileKey());
+            rabbitTemplate.convertAndSend(RabbitMQConfig.OCR_QUEUE, new OCRJobDTO(entity.getId(), fileKey));
+//            rabbitTemplate.convertAndSend(RabbitMQConfig.QUEUE_NAME, "Document uploaded with ID: " + entity.getId());
             logger.info("Message sent to RabbitMQ: Document uploaded with ID: {}", entity.getId());
         } catch (Exception e) {
             throw new DocumentUploadException("Failed to upload document: " + e.getMessage());
