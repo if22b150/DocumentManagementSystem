@@ -1,7 +1,6 @@
 package at.technikumwien.dmsbackend.service.impl;
 
 import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -12,6 +11,7 @@ import at.technikumwien.dmsbackend.service.dto.OCRJobDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.core.MessagePostProcessor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -43,6 +43,11 @@ public class DocumentServiceImpl implements DocumentService {
     @Value("${minio.bucket-name}")
     private String bucketName;
 
+    MessagePostProcessor messagePostProcessor = message -> {
+        message.getMessageProperties().setHeader("__TypeId__", "JobDTO");
+        return message;
+    };
+
     @Override
     public DocumentDTO uploadDocument(DocumentDTO documentDTO) {
         DocumentEntity entity = DocumentEntity.builder()
@@ -65,10 +70,8 @@ public class DocumentServiceImpl implements DocumentService {
         try {
             // Upload the file data to MinIO
             minioService.uploadFile(fileKey, new ByteArrayInputStream(documentDTO.getFileData()), documentDTO.getFileData().length, documentDTO.getType());
-
-            OCRJobDTO job = new OCRJobDTO(entity.getId(), entity.getFileKey());
-            rabbitTemplate.convertAndSend(RabbitMQConfig.OCR_QUEUE, new OCRJobDTO(entity.getId(), fileKey));
-//            rabbitTemplate.convertAndSend(RabbitMQConfig.QUEUE_NAME, "Document uploaded with ID: " + entity.getId());
+            OCRJobDTO ocrJobDTO = new OCRJobDTO(entity.getId(), fileKey);
+            rabbitTemplate.convertAndSend(RabbitMQConfig.OCR_QUEUE, ocrJobDTO, messagePostProcessor);
             logger.info("Message sent to RabbitMQ: Document uploaded with ID: {}", entity.getId());
         } catch (Exception e) {
             throw new DocumentUploadException("Failed to upload document: " + e.getMessage());

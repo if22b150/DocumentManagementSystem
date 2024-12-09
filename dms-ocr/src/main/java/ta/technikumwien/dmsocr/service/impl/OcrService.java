@@ -7,17 +7,27 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 
 @Service
 public class OcrService {
     public String performOCR(InputStream pdfStream) throws Exception {
-        // Save InputStream to a temporary file
-        File tempFile = File.createTempFile("ocr-", ".pdf");
-        Files.copy(pdfStream, tempFile.toPath());
-
         // Perform OCR using Tesseract
         ITesseract tesseract = new Tesseract();
-        tesseract.setDatapath("/usr/share/tessdata"); // Path to Tesseract data
-        return tesseract.doOCR(tempFile);
+        tesseract.setDatapath("/usr/share/tesseract-ocr/4.00/tessdata/");
+
+        File tempFile = File.createTempFile("ocr-", ".pdf");
+        try {
+            Files.copy(pdfStream, tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+            // Perform OCR
+            return tesseract.doOCR(tempFile);
+
+        } finally {
+            // Clean up temporary file
+            if (tempFile.exists()) {
+                tempFile.delete();
+            }
+        }
     }
 }
