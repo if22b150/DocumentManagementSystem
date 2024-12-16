@@ -2,8 +2,33 @@
 <module type="JAVA_MODULE" version="4">
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
-    <content url="file://$MODULE_DIR$" />
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/dms-ocr/src/main/java" isTestSource="false" />
+    </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="jar://$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.28/lombok-1.18.28.jar!/" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+      </library>
+    </orderEntry>
+    <orderEntry type="library" name="Maven: io.minio:minio:8.5.13" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework:spring-context:6.1.13" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework:spring-beans:6.1.13" level="project" />
+    <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:2.0.16" level="project" />
+    <orderEntry type="library" name="Maven: com.fasterxml.jackson.core:jackson-databind:2.17.2" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework.amqp:spring-amqp:3.1.7" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework.amqp:spring-rabbit:3.1.7" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot-autoconfigure:3.3.4" level="project" />
+    <orderEntry type="library" name="Maven: org.springframework.boot:spring-boot:3.3.4" level="project" />
+    <orderEntry type="library" name="Maven: co.elastic.clients:elasticsearch-java:8.13.4" level="project" />
+    <orderEntry type="library" name="Maven: org.elasticsearch.client:elasticsearch-rest-client:8.13.4" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.httpcomponents:httpcore:4.4.16" level="project" />
+    <orderEntry type="library" name="Maven: net.sourceforge.tess4j:tess4j:5.11.0" level="project" />
+    <orderEntry type="library" name="Maven: jakarta.annotation:jakarta.annotation-api:2.1.1" level="project" />
   </component>
 </module>

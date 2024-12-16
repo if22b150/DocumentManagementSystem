@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import ta.technikumwien.dmsocr.service.dto.JobDTO;
 import ta.technikumwien.dmsocr.service.dto.ResultDTO;
+import ta.technikumwien.dmsocr.service.impl.ElasticsearchService;
 import ta.technikumwien.dmsocr.service.impl.MinioService;
 import ta.technikumwien.dmsocr.service.impl.OcrService;
 
@@ -20,6 +21,8 @@ public class OcrWorker {
     private final OcrService ocrService;
     private final RabbitTemplate rabbitTemplate;
     private final ObjectMapper objectMapper;
+
+    private final ElasticsearchService elasticsearchService;
 
     private static final Logger logger = LoggerFactory.getLogger(OcrWorker.class);
 
@@ -33,11 +36,12 @@ public class OcrWorker {
     };
 
     public OcrWorker(MinioService minioService, OcrService ocrService,
-                     RabbitTemplate rabbitTemplate, ObjectMapper objectMapper) {
+                     RabbitTemplate rabbitTemplate, ObjectMapper objectMapper, ElasticsearchService elasticsearchService) {
         this.minioService = minioService;
         this.ocrService = ocrService;
         this.rabbitTemplate = rabbitTemplate;
         this.objectMapper = objectMapper;
+        this.elasticsearchService = elasticsearchService;
     }
 
     public void processOCRJob(JobDTO job) {
@@ -47,11 +51,12 @@ public class OcrWorker {
             // Perform OCR
             String recognizedText = ocrService.performOCR(pdfStream);
 
-            // TODO: ElasticSearch Integration
-
+            // Save in elasticsearch
+            ResultDTO result = new ResultDTO(job.getDocumentId(), recognizedText);
+            elasticsearchService.init();
+            //elasticsearchService.saveDocument(result);
 
             // Send the result to RESULT_QUEUE
-            ResultDTO result = new ResultDTO(job.getDocumentId(), recognizedText);
             rabbitTemplate.convertAndSend(resultQueue, result, messagePostProcessor);
             logger.info("Message sent to RabbitMQ: Document processed with ID: {}", result.getDocumentId());
             logger.info("Recognized text: " + recognizedText);

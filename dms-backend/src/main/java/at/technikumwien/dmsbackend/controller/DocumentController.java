@@ -2,10 +2,12 @@ package at.technikumwien.dmsbackend.controller;
 
 import java.io.InputStream;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.validation.Valid;
 
 import at.technikumwien.dmsbackend.service.MinioService;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -31,8 +33,11 @@ public class DocumentController {
     private final DocumentService documentService;
     private final MinioService minioService;
 
+    private static final org.slf4j.Logger logger = LoggerFactory.getLogger(DocumentController.class);
+
     @PostMapping
     public ResponseEntity<DocumentDTO> create(@Valid @RequestBody DocumentDTO document) {
+        logger.info("Document: "+ document);
         DocumentDTO createdDocument = documentService.uploadDocument(document);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdDocument);
     }
