@@ -2,6 +2,7 @@ package at.technikumwien.dmsbackend.controller;
 
 import java.io.InputStream;
 import java.util.List;
+import java.util.Objects;
 
 import javax.validation.Valid;
 
@@ -44,8 +45,10 @@ public class DocumentController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<DocumentDTO>> getDocuments() {
-        List<DocumentDTO> documents = documentService.getAllDocuments();
+    public ResponseEntity<List<DocumentDTO>> getDocuments(@RequestParam(value = "content", required = false) String searchTerm) {
+        List<DocumentDTO> documents = searchTerm != null && !searchTerm.isBlank()
+                ? documentService.searchDocumentsInContent(searchTerm)
+                : documentService.getAllDocuments();
         return ResponseEntity.ok(documents);
     }
 

@@ -24,4 +24,6 @@ public interface DocumentService {
 
     // Retrieve metadata for a specific document by its ID
     DocumentDTO getDocumentMetadata(Long id);
+
+    List<DocumentDTO> searchDocumentsInContent(String searchTerm);
 }

@@ -14,6 +14,10 @@
   "TITLE": "Title",
   "URL": "Url",
   "LOADING_RESULTS": "Loading results ...",
+  "CONTENT": "Search in document",
+  "DOCUMENTS": {
+    "SUCCESSFULLY_DELETED": "Document successfully deleted."
+  },
   "NAVIGATION": {
     "DOCUMENTS": "Documents",
     "DOCUMENTS_RESOURCE_NOT_FOUND": "Document not found."

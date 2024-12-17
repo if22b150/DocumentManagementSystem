@@ -7,6 +7,8 @@ import org.springframework.amqp.core.MessagePostProcessor;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import ta.technikumwien.dmsocr.persistence.DocumentIndex;
+import ta.technikumwien.dmsocr.persistence.repository.DocumentIndexRepository;
 import ta.technikumwien.dmsocr.service.dto.JobDTO;
 import ta.technikumwien.dmsocr.service.dto.ResultDTO;
 import ta.technikumwien.dmsocr.service.impl.MinioService;
@@ -20,6 +22,8 @@ public class OcrWorker {
     private final OcrService ocrService;
     private final RabbitTemplate rabbitTemplate;
     private final ObjectMapper objectMapper;
+    private final DocumentIndexRepository documentIndexRepository;
+
 
     private static final Logger logger = LoggerFactory.getLogger(OcrWorker.class);
 
@@ -33,11 +37,12 @@ public class OcrWorker {
     };
 
     public OcrWorker(MinioService minioService, OcrService ocrService,
-                     RabbitTemplate rabbitTemplate, ObjectMapper objectMapper) {
+                     RabbitTemplate rabbitTemplate, ObjectMapper objectMapper, DocumentIndexRepository documentIndexRepository) {
         this.minioService = minioService;
         this.ocrService = ocrService;
         this.rabbitTemplate = rabbitTemplate;
         this.objectMapper = objectMapper;
+        this.documentIndexRepository = documentIndexRepository;
     }
 
     public void processOCRJob(JobDTO job) {
@@ -47,8 +52,13 @@ public class OcrWorker {
             // Perform OCR
             String recognizedText = ocrService.performOCR(pdfStream);
 
-            // TODO: ElasticSearch Integration
-
+            // Save to ElasticSearch
+            DocumentIndex documentIndex = DocumentIndex.builder()
+                    .documentId(job.getDocumentId())
+                    .content(recognizedText)
+                    .build();
+            documentIndexRepository.save(documentIndex);
+            logger.info("Saved document to ElasticSearch with ID: {}", job.getDocumentId());
 
             // Send the result to RESULT_QUEUE
             ResultDTO result = new ResultDTO(job.getDocumentId(), recognizedText);
