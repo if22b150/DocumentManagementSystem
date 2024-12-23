@@ -35,17 +35,23 @@ jobs:
       - name: Start Docker Compose
         run: docker-compose -f ./docker-compose.yml up -d
 
-      # Install dependencies (for Node.js example)
+      # Install Maven
+      - name: Install Maven
+        run: |
+          sudo apt update
+          sudo apt install -y maven
+      
+      # Install dependencies for dms-backend (using Maven)
       - name: Install Dependencies for dms-backend
         run: |
           cd dms-backend
-          npm install
-
-      # Run Unit Tests for dms-backend (for Node.js example)
+          mvn clean install
+      
+      # Run Unit Tests for dms-backend (using Maven)
       - name: Run Unit Tests for dms-backend
         run: |
           cd dms-backend
-          npm test
+          mvn test
 
       # Stop and Cleanup
       - name: Stop Docker Compose
