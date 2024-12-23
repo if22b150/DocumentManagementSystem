@@ -43,8 +43,34 @@ class DocumentServiceImplTest {
     void setup() {
         MockitoAnnotations.openMocks(this);
     }
-    
-    
+
+    @Test
+    void testUpdateDocument() {
+        DocumentDTO updatedDTO = DocumentDTO.builder()
+                .id(1L)
+                .title("Updated Title")
+                .description("Description")
+                .type("Type")
+                .size(123L)
+                .uploadDate("2024-11-04")
+                .build();
+
+        DocumentEntity existingEntity = DocumentEntity.builder()
+                .id(1L)
+                .title("Title")
+                .description("Description")
+                .type("Type")
+                .size(123L)
+                .uploadDate(LocalDate.now())
+                .build();
+
+        when(documentRepository.findById(1L)).thenReturn(Optional.of(existingEntity));
+        when(documentMapper.mapToDto(any(DocumentEntity.class))).thenReturn(updatedDTO);
+
+        DocumentDTO result = documentService.updateDocument(1L, updatedDTO);
+
+        assertEquals("Updated Title", result.getTitle());
+    }
 
     @Test
     void testGetDocumentById() {
@@ -97,35 +123,6 @@ class DocumentServiceImplTest {
 
         assertEquals(1, results.size());
     }
-
-    @Test
-    void testUpdateDocument() {
-        DocumentDTO updatedDTO = DocumentDTO.builder()
-                .id(1L)
-                .title("Updated Title")
-                .description("Description")
-                .type("Type")
-                .size(123L)
-                .uploadDate("2024-11-04")
-                .build();
-
-        DocumentEntity existingEntity = DocumentEntity.builder()
-                .id(1L)
-                .title("Title")
-                .description("Description")
-                .type("Type")
-                .size(123L)
-                .uploadDate(LocalDate.now())
-                .build();
-
-        when(documentRepository.findById(1L)).thenReturn(Optional.of(existingEntity));
-        when(documentMapper.mapToDto(any(DocumentEntity.class))).thenReturn(updatedDTO);
-
-        DocumentDTO result = documentService.updateDocument(1L, updatedDTO);
-
-        assertEquals("Updated Title", result.getTitle());
-    }
-    
 
     @Test
     void testGetDocumentMetadata() {
