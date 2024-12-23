@@ -41,12 +41,6 @@ jobs:
           sudo apt update
           sudo apt install -y maven
       
-      # Install dependencies for dms-backend (using Maven)
-      - name: Install Dependencies for dms-backend
-        run: |
-          cd dms-backend
-          mvn clean install
-      
       # Run Unit Tests for dms-backend (using Maven)
       - name: Run Unit Tests for dms-backend
         run: |
