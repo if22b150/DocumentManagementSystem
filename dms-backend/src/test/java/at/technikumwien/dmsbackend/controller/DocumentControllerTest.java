@@ -1,6 +1,7 @@
 package at.technikumwien.dmsbackend.controller;
 
 import at.technikumwien.dmsbackend.service.DocumentService;
+import at.technikumwien.dmsbackend.service.MinioService;
 import at.technikumwien.dmsbackend.service.dto.DocumentDTO;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -11,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
+import java.io.ByteArrayInputStream;
 import java.util.Collections;
 
 import static org.hamcrest.Matchers.hasSize;
@@ -27,6 +29,9 @@ class DocumentControllerTest {
     @Mock
     private DocumentService documentService;
 
+    @Mock
+    private MinioService minioService;
+
     @InjectMocks
     private DocumentController documentController;
 
@@ -34,6 +39,45 @@ class DocumentControllerTest {
     void setup() {
         MockitoAnnotations.openMocks(this);
         this.mockMvc = MockMvcBuilders.standaloneSetup(documentController).build();
+    }
+
+    @Test
+    void testDownloadDocument() throws Exception {
+        DocumentDTO documentDTO = DocumentDTO.builder()
+                .id(1L)
+                .fileKey("test-file-key")
+                .title("Test File")
+                .build();
+
+        when(documentService.getDocumentById(1L)).thenReturn(documentDTO);
+        when(minioService.getFile("test-file-key"))
+                .thenReturn(new ByteArrayInputStream("Test File Content".getBytes()));
+
+        mockMvc.perform(get("/api/v1/documents/1/download"))
+                .andExpect(status().isOk())
+                .andExpect(header().string("Content-Disposition", "attachment; filename=\"Test_File.pdf\""))
+                .andExpect(content().string("Test File Content"));
+    }
+
+    @Test
+    void testSearchDocumentsWithContentFilter() throws Exception {
+        DocumentDTO documentDTO = DocumentDTO.builder()
+                .id(1L)
+                .title("Filtered Document")
+                .description("Description")
+                .type("Type")
+                .size(123L)
+                .uploadDate("2024-11-04")
+                .build();
+
+        when(documentService.searchDocumentsInContent("contentFilter"))
+                .thenReturn(Collections.singletonList(documentDTO));
+
+        mockMvc.perform(get("/api/v1/documents")
+                        .param("content", "contentFilter"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].title").value("Filtered Document"));
     }
 
     @Test

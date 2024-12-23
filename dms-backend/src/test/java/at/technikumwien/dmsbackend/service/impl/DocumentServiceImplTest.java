@@ -71,7 +71,7 @@ class DocumentServiceImplTest {
 
         assertEquals("Updated Title", result.getTitle());
     }
-    
+
     @Test
     void testGetDocumentById() {
         DocumentEntity documentEntity = DocumentEntity.builder()

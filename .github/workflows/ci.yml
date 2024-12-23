@@ -1,0 +1,75 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - sprint-7
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Stage 1: Checkout Code
+      - name: Checkout Code
+        uses: actions/checkout@v3
+
+      # Stage 2: Setup Docker
+      - name: Set up Docker
+        uses: docker/setup-buildx-action@v2
+
+      # Stage 3: Install Docker Compose
+      - name: Install Docker Compose
+        run: |
+          curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+          chmod +x /usr/local/bin/docker-compose
+          docker-compose --version
+
+      # Stage 4: Build Docker Compose Services
+      - name: Build Docker Compose
+        run: docker-compose -f ./docker-compose.yml build
+
+      # Stage 5: Start Services in Background
+      - name: Start Docker Compose
+        run: docker-compose -f ./docker-compose.yml up -d
+
+      # Stage 6: Install Java 17
+      - name: Install Java 17
+        run: |
+          sudo apt update
+          sudo apt install -y openjdk-17-jdk
+          sudo update-alternatives --config java
+          java -version
+          echo "JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64" >> $GITHUB_ENV
+          echo "PATH=$JAVA_HOME/bin:$PATH" >> $GITHUB_ENV
+
+      # Stage 7: Install Maven
+      - name: Install Maven
+        run: |
+          sudo apt update
+          sudo apt install -y maven
+          mvn -v  # Ensure Maven is installed correctly
+
+      # Stage 8: Install dependencies for dms-backend (using Maven)
+      - name: Install Dependencies for dms-backend
+        run: |
+          cd dms-backend
+          mvn clean install
+
+      # Stage 9: Run Unit and Integration Tests for dms-backend (using Maven)
+      - name: Run Unit and Integration Tests for dms-backend
+        run: |
+          cd dms-backend
+          mvn test
+
+      - name: Run Unit and Integration Tests for dms-backend
+        run: |
+          cd dms-ocr
+          mvn test
+
+      # Stage 10: Stop and Cleanup
+      - name: Stop Docker Compose
+        if: always()
+        run: docker-compose -f ./docker-compose.yml down --volumes
