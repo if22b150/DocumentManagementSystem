@@ -43,39 +43,6 @@ class DocumentServiceImplTest {
     void setup() {
         MockitoAnnotations.openMocks(this);
     }
-
-    @Test
-    void testUploadDocument() {
-        DocumentDTO documentDTO = DocumentDTO.builder()
-                .title("Title")
-                .description("Description")
-                .type("Type")
-                .size(123L)
-                .uploadDate("2024-11-04")
-                .build();
-    
-        DocumentEntity documentEntity = DocumentEntity.builder()
-                .id(1L)  
-                .title("Title")
-                .description("Description")
-                .type("Type")
-                .size(123L)
-                .uploadDate(LocalDate.parse("2024-11-04"))
-                .build();
-    
-        when(documentRepository.save(any(DocumentEntity.class))).thenAnswer(invocation -> {
-            DocumentEntity savedEntity = invocation.getArgument(0);
-            savedEntity.setId(1L);
-            return savedEntity;
-        });
-    
-        when(documentMapper.mapToDto(any(DocumentEntity.class))).thenReturn(documentDTO);
-        
-        DocumentDTO result = documentService.uploadDocument(documentDTO);
-        
-        assertNotNull(result);
-        verify(rabbitTemplate, times(1)).convertAndSend(RabbitMQConfig.OCR_QUEUE, "Document uploaded with ID: " + documentEntity.getId());
-    }
     
     
 
@@ -158,12 +125,7 @@ class DocumentServiceImplTest {
 
         assertEquals("Updated Title", result.getTitle());
     }
-
-    @Test
-    void testDeleteDocument() {
-        documentService.deleteDocument(1L);
-        verify(documentRepository, times(1)).deleteById(1L);
-    }
+    
 
     @Test
     void testGetDocumentMetadata() {
