@@ -64,12 +64,13 @@ jobs:
           cd dms-backend
           mvn test
 
-      - name: Run Unit and Integration Tests for dms-backend
+       # Stage 10: Run Unit and Integration Tests for dms-ocr (using Maven)
+      - name: Run Unit and Integration Tests for dms-ocr
         run: |
           cd dms-ocr
           mvn test
 
-      # Stage 10: Stop and Cleanup
+      # Stage 11: Stop and Cleanup
       - name: Stop Docker Compose
         if: always()
         run: docker-compose -f ./docker-compose.yml down --volumes
