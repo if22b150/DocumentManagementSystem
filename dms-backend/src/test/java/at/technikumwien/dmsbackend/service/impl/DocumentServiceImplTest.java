@@ -45,39 +45,32 @@ class DocumentServiceImplTest {
     }
 
     @Test
-    void testUploadDocument() {
-        DocumentDTO documentDTO = DocumentDTO.builder()
-                .title("Title")
+    void testUpdateDocument() {
+        DocumentDTO updatedDTO = DocumentDTO.builder()
+                .id(1L)
+                .title("Updated Title")
                 .description("Description")
                 .type("Type")
                 .size(123L)
                 .uploadDate("2024-11-04")
                 .build();
-    
-        DocumentEntity documentEntity = DocumentEntity.builder()
-                .id(1L)  
+
+        DocumentEntity existingEntity = DocumentEntity.builder()
+                .id(1L)
                 .title("Title")
                 .description("Description")
                 .type("Type")
                 .size(123L)
-                .uploadDate(LocalDate.parse("2024-11-04"))
+                .uploadDate(LocalDate.now())
                 .build();
-    
-        when(documentRepository.save(any(DocumentEntity.class))).thenAnswer(invocation -> {
-            DocumentEntity savedEntity = invocation.getArgument(0);
-            savedEntity.setId(1L);
-            return savedEntity;
-        });
-    
-        when(documentMapper.mapToDto(any(DocumentEntity.class))).thenReturn(documentDTO);
-        
-        DocumentDTO result = documentService.uploadDocument(documentDTO);
-        
-        assertNotNull(result);
-        verify(rabbitTemplate, times(1)).convertAndSend(RabbitMQConfig.OCR_QUEUE, "Document uploaded with ID: " + documentEntity.getId());
+
+        when(documentRepository.findById(1L)).thenReturn(Optional.of(existingEntity));
+        when(documentMapper.mapToDto(any(DocumentEntity.class))).thenReturn(updatedDTO);
+
+        DocumentDTO result = documentService.updateDocument(1L, updatedDTO);
+
+        assertEquals("Updated Title", result.getTitle());
     }
-    
-    
 
     @Test
     void testGetDocumentById() {
