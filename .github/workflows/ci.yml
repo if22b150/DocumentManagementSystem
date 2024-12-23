@@ -35,11 +35,25 @@ jobs:
       - name: Start Docker Compose
         run: docker-compose -f ./docker-compose.yml up -d
 
+      # Install Java 17
+      - name: Install Java 17
+        run: |
+          sudo apt update
+          sudo apt install -y openjdk-17-jdk
+          java -version
+      
       # Install Maven
       - name: Install Maven
         run: |
           sudo apt update
           sudo apt install -y maven
+          mvn -v  # Ensure Maven is installed correctly
+      
+      # Install dependencies for dms-backend (using Maven)
+      - name: Install Dependencies for dms-backend
+        run: |
+          cd dms-backend
+          mvn clean install
       
       # Run Unit Tests for dms-backend (using Maven)
       - name: Run Unit Tests for dms-backend
