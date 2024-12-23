@@ -35,14 +35,6 @@ jobs:
       - name: Start Docker Compose
         run: docker-compose -f ./docker-compose.yml up -d
 
-      # Wait for Services to be Healthy
-      - name: Wait for Services to be Ready
-        run: |
-          until docker-compose exec db pg_isready -U dms; do
-            echo "Waiting for DB to be ready..."
-            sleep 5
-          done
-
       # Install dependencies (for Node.js example)
       - name: Install Dependencies for dms-backend
         run: |
