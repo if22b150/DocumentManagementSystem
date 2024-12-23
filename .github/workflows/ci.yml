@@ -8,25 +8,30 @@ on:
   pull_request:
 
 jobs:
-  build-and-test:
+  setup:
     runs-on: ubuntu-latest
-        
+
     steps:
       # Checkout Code
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      # Setup Docker
+      # Set up Docker
       - name: Set up Docker
         uses: docker/setup-buildx-action@v2
 
-        # Install Docker Compose
+      # Install Docker Compose
       - name: Install Docker Compose
         run: |
           curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
           chmod +x /usr/local/bin/docker-compose
           docker-compose --version
 
+  build:
+    needs: setup
+    runs-on: ubuntu-latest
+
+    steps:
       # Build Docker Compose Services
       - name: Build Docker Compose
         run: docker-compose -f ./docker-compose.yml build
@@ -51,19 +56,29 @@ jobs:
           sudo apt update
           sudo apt install -y maven
           mvn -v  # Ensure Maven is installed correctly
-      
-      # Install dependencies for dms-backend (using Maven)
+
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      # Install Dependencies for dms-backend
       - name: Install Dependencies for dms-backend
         run: |
           cd dms-backend
           mvn clean install
       
-      # Run Unit Tests for dms-backend (using Maven)
+      # Run Unit Tests for dms-backend
       - name: Run Unit Tests for dms-backend
         run: |
           cd dms-backend
           mvn test
 
+  cleanup:
+    needs: [build, test]
+    runs-on: ubuntu-latest
+
+    steps:
       # Stop and Cleanup
       - name: Stop Docker Compose
         if: always()
