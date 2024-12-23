@@ -58,10 +58,15 @@ jobs:
           cd dms-backend
           mvn clean install
 
-      # Stage 9: Run Unit Tests for dms-backend (using Maven)
-      - name: Run Unit Tests for dms-backend
+      # Stage 9: Run Unit and Integration Tests for dms-backend (using Maven)
+      - name: Run Unit and Integration Tests for dms-backend
         run: |
           cd dms-backend
+          mvn test
+
+      - name: Run Unit and Integration Tests for dms-backend
+        run: |
+          cd dms-ocr
           mvn test
 
       # Stage 10: Stop and Cleanup
