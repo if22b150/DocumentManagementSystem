@@ -68,6 +68,17 @@
 			<artifactId>elasticsearch-java</artifactId>
 			<version>8.11.3</version>
 		</dependency>
+        <dependency>
+            <groupId>at.technikum-wien</groupId>
+            <artifactId>dms-backend</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+            <scope>test</scope>
+        </dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
 	</dependencies>
 
 	<build>
