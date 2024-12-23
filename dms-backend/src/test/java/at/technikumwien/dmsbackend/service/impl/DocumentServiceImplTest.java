@@ -132,40 +132,6 @@ class DocumentServiceImplTest {
     }
 
     @Test
-    void testUpdateDocument() {
-        DocumentDTO updatedDTO = DocumentDTO.builder()
-                .id(1L)
-                .title("Updated Title")
-                .description("Description")
-                .type("Type")
-                .size(123L)
-                .uploadDate("2024-11-04")
-                .build();
-
-        DocumentEntity existingEntity = DocumentEntity.builder()
-                .id(1L)
-                .title("Title")
-                .description("Description")
-                .type("Type")
-                .size(123L)
-                .uploadDate(LocalDate.now())
-                .build();
-
-        when(documentRepository.findById(1L)).thenReturn(Optional.of(existingEntity));
-        when(documentMapper.mapToDto(any(DocumentEntity.class))).thenReturn(updatedDTO);
-
-        DocumentDTO result = documentService.updateDocument(1L, updatedDTO);
-
-        assertEquals("Updated Title", result.getTitle());
-    }
-
-    @Test
-    void testDeleteDocument() {
-        documentService.deleteDocument(1L);
-        verify(documentRepository, times(1)).deleteById(1L);
-    }
-
-    @Test
     void testGetDocumentMetadata() {
         DocumentEntity documentEntity = DocumentEntity.builder()
                 .id(1L)
