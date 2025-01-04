@@ -8,6 +8,27 @@ on:
   pull_request:
 
 jobs:
+  security:
+    name: Security scan
+    runs-on: ubuntu-latest
+    # needs: lint
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Snyk
+        uses: snyk/actions/setup@master
+
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.13'
+
+      - name: Snyk monitor
+        run: snyk test
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+          
   build-and-test:
     runs-on: ubuntu-latest
 
