@@ -1,11 +1,12 @@
 package ta.technikumwien.dmsocr;
 
 import static org.mockito.Mockito.*;
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Before;
-import org.junit.Test;
+import io.minio.MinioClient;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.*;
 import org.springframework.amqp.core.MessagePostProcessor;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
@@ -15,6 +16,7 @@ import ta.technikumwien.dmsocr.service.dto.JobDTO;
 import ta.technikumwien.dmsocr.service.dto.ResultDTO;
 import ta.technikumwien.dmsocr.service.impl.MinioService;
 import ta.technikumwien.dmsocr.service.impl.OcrService;
+import ta.technikumwien.dmsocr.service.impl.RabbitMQListenerService;
 import ta.technikumwien.dmsocr.worker.OcrWorker;
 
 import java.io.InputStream;
@@ -22,6 +24,9 @@ import java.util.Optional;
 
 public class OcrWorkerTest {
 
+    @Mock
+    private InputStream mockPdfStream;
+    
     @Mock
     private MinioService minioService;
 
@@ -31,22 +36,30 @@ public class OcrWorkerTest {
     @Mock
     private RabbitTemplate rabbitTemplate;
 
+    @InjectMocks
+    private RabbitMQListenerService rabbitMQListenerService;
+
+    @Mock
+    private JobDTO jobDTO;
+
     @Mock
     private DocumentIndexRepository documentIndexRepository;
 
     @Mock
     private InputStream inputStream;
 
+    @Mock
+    private OcrWorker ocrWorkerMock;
     private OcrWorker ocrWorker;
 
-    @Before
-    public void setUp() {
-        MockitoAnnotations.initMocks(this);
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
         ocrWorker = new OcrWorker(minioService, ocrService, rabbitTemplate, new ObjectMapper(), documentIndexRepository);
     }
 
     @Test
-    public void testProcessOCRJob() throws Exception {
+    void testProcessOCRJob() throws Exception {
         // Arrange
         JobDTO job = JobDTO.builder()
                 .documentId(123L)
@@ -62,15 +75,12 @@ public class OcrWorkerTest {
         ocrWorker.processOCRJob(job);
 
         // Assert
-        // Verify that the OCR service was called
         verify(ocrService).performOCR(inputStream);
-
-        // Verify that the document index was saved to the repository
         verify(documentIndexRepository).save(any());
     }
 
     @Test
-    public void testProcessOCRJob_ExceptionHandling() throws Exception {
+    void testProcessOCRJob_ExceptionHandling() throws Exception {
         // Arrange
         JobDTO job = JobDTO.builder()
                 .documentId(123L)
@@ -83,9 +93,42 @@ public class OcrWorkerTest {
         ocrWorker.processOCRJob(job);
 
         // Assert
-        // Verify no further actions were performed
         verify(ocrService, never()).performOCR(any());
         verify(documentIndexRepository, never()).save(any());
         verify(rabbitTemplate, never()).convertAndSend(anyString(), any(), Optional.ofNullable(any()));
+    }
+
+    @Test
+    void testPerformOCR_Exception() throws Exception {
+        // Arrange
+        when(ocrService.performOCR(any())).thenThrow(new RuntimeException("OCR error"));
+
+        // Act & Assert
+        assertThrows(RuntimeException.class, () -> ocrService.performOCR(mockPdfStream));
+    }
+
+    @Test
+    void testReceiveMessage() throws Exception {
+        // Arrange
+        when(jobDTO.getDocumentId()).thenReturn(123L);
+
+        // Act
+        rabbitMQListenerService.receiveMessage(jobDTO);
+
+        // Assert
+        verify(ocrWorkerMock, times(1)).processOCRJob(jobDTO);
+    }
+
+    @Test
+    void testReceiveMessage_Exception() throws Exception {
+        // Arrange
+        when(jobDTO.getDocumentId()).thenReturn(123L);
+        doThrow(new RuntimeException("OCR processing error")).when(ocrWorkerMock).processOCRJob(jobDTO);
+
+        // Act
+        rabbitMQListenerService.receiveMessage(jobDTO);
+
+        // Assert
+        verify(ocrWorkerMock, times(1)).processOCRJob(jobDTO);
     }
 }
