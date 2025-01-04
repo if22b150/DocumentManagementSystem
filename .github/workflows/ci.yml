@@ -24,6 +24,15 @@ jobs:
         with:
           go-version: '1.13'
 
+      - name: Install Java 17
+        run: |
+          sudo apt update
+          sudo apt install -y openjdk-17-jdk
+          sudo update-alternatives --config java
+          java -version
+          echo "JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64" >> $GITHUB_ENV
+          echo "PATH=$JAVA_HOME/bin:$PATH" >> $GITHUB_ENV
+                
       - name: Install Dependencies for dms-backend
         run: |
           cd dms-backend
