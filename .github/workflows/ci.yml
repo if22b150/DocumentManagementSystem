@@ -27,7 +27,7 @@ jobs:
       - name: Snyk monitor
         run: snyk test
         env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+          SNYK_TOKEN: 11e2472d-550b-46e9-a36c-5ad421ca3e8f
           
   build-and-test:
     runs-on: ubuntu-latest
