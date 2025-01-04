@@ -100,6 +100,12 @@ jobs:
           cd dms-backend
           mvn test
 
+      # Stage 8: Install dependencies for dms-backend (using Maven)
+      - name: Install Dependencies for dms-ocr
+        run: |
+          cd dms-ocr
+          mvn clean install
+
        # Stage 10: Run Unit and Integration Tests for dms-ocr (using Maven)
       - name: Run Unit and Integration Tests for dms-ocr
         run: |
