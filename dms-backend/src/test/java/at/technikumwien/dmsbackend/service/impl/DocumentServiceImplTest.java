@@ -3,9 +3,7 @@ package at.technikumwien.dmsbackend.service.impl;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.time.LocalDate;
 import java.util.Collections;
@@ -149,4 +147,27 @@ class DocumentServiceImplTest {
 
         assertEquals("Title", result.getTitle());
     }
+
+    @Test
+    void testDeleteDocument() {
+        // Prepare a document to be deleted
+        DocumentEntity documentEntity = DocumentEntity.builder()
+                .id(1L)
+                .title("Title to delete")
+                .description("Description")
+                .type("Type")
+                .size(123L)
+                .uploadDate(LocalDate.now())
+                .build();
+
+        when(documentRepository.findById(1L)).thenReturn(Optional.of(documentEntity));
+
+        // Call delete method
+        documentService.deleteDocument(1L);
+
+        // Verify the delete operation
+        verify(documentRepository, times(1)).deleteById(1L);
+    }
+
+
 }
