@@ -203,4 +203,34 @@ class DocumentControllerTest {
                 .andExpect(jsonPath("$.id").value(1L))
                 .andExpect(jsonPath("$.title").value("Title"));
     }
+
+    @Test
+    void testSearchDocumentsNoResults() throws Exception {
+        when(documentService.searchDocuments("NonExistentTitle")).thenReturn(Collections.emptyList());
+
+        mockMvc.perform(get("/api/v1/documents/search")
+                        .param("query", "NonExistentTitle"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(0)));  // Erwartet eine leere Liste
+    }
+
+    @Test
+    void testGetDocumentsNoFilter() throws Exception {
+        DocumentDTO documentDTO = DocumentDTO.builder()
+                .id(1L)
+                .title("Title")
+                .description("Description")
+                .type("Type")
+                .size(123L)
+                .uploadDate("2024-11-04")
+                .build();
+
+        when(documentService.getAllDocuments()).thenReturn(Collections.singletonList(documentDTO));
+
+        mockMvc.perform(get("/api/v1/documents"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(1)))  // Erwartet 1 Dokument in der Antwort
+                .andExpect(jsonPath("$[0].title").value("Title"));
+    }
+
 }
