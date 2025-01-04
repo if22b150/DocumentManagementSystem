@@ -24,8 +24,13 @@ jobs:
         with:
           go-version: '1.13'
 
-      - name: Snyk monitor
-        run: snyk test
+      - name: Snyk test for dms-backend
+        run: snyk test dms-backend
+        env:
+          SNYK_TOKEN: 11e2472d-550b-46e9-a36c-5ad421ca3e8f
+  
+      - name: Snyk test for dms-ocr
+        run: snyk test dms-ocr
         env:
           SNYK_TOKEN: 11e2472d-550b-46e9-a36c-5ad421ca3e8f
           
