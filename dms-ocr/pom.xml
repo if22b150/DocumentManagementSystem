@@ -68,11 +68,6 @@
 			<artifactId>elasticsearch-java</artifactId>
 			<version>8.11.3</version>
 		</dependency>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<scope>test</scope>
-		</dependency>
 	</dependencies>
 
 	<build>
