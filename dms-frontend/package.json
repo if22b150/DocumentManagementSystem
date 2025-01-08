@@ -24,7 +24,7 @@
     "@ngx-translate/http-loader": "^8.0.0",
     "mdb-angular-file-upload": "git+https://oauth2:cKXDGnNpyg_GX7gN876v@git.mdbootstrap.com/mdb/angular/mdb5/plugins/prd/file-upload",
     "mdb-angular-ui-kit": "git+https://oauth2:cKXDGnNpyg_GX7gN876v@git.mdbootstrap.com/mdb/angular/mdb5/prd/mdb5-angular-ui-kit-pro-essential",
-    "rollup": "^4.22.4",
+    "rollup": "^4.28.1",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.14.3"
